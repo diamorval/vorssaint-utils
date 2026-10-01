@@ -36,7 +36,8 @@ struct NotchAgentsView: View {
     var body: some View {
         Group {
             if let request = approvals.pending {
-                NotchAgentApprovalCard(request: request)
+                NotchAgentApprovalCard(request: request,
+                                       session: AgentSessionBoard.row(for: request, in: usage.snapshot.sessions))
                     // A new request starts with no choices made.
                     .id(request.id)
                     .frame(height: min(size.height, NotchAgentSupport.approvalCardHeight(for: request)))
@@ -499,7 +500,7 @@ private struct NotchAgentLiveCard: View {
     private func list(_ rows: [AgentSessionRow], now: Date) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             ForEach(rows) { session in
-                if session.pid != nil {
+                if AgentSessionBoard.canJump(session) {
                     Button { AgentJump.open(session) } label: { row(session, now: now).contentShape(Rectangle()) }
                         .buttonStyle(.plain)
                 } else {
